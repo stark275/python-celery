@@ -1,3 +1,6 @@
 from django.db import models
 
-# Create your models here.
+class Sale(models.Model):
+    sale = models.CharField(max_length=200)
+    sale_date = models.DateTimeField("date published")
+

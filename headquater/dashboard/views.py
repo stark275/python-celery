@@ -8,6 +8,8 @@ app_name = 'dashboard'
 def index(request):
     return render(request, 'dashboard/index.html')
 
+
+
 def send_message(request):
     branch = request.POST.get('branch', '')
     message = request.POST.get('message', '')
