@@ -9,7 +9,12 @@ branch_id = 'MA:'
 # Create your views here.
 
 def index(request):
-    return render(request, 'sales/index.html')
+
+    message = Message.objects.all()
+
+    return render(request, 'sales/index.html',{
+        'messages': message
+    })
 
 def sale(request):
 
