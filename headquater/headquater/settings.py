@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'dashboard'
 ]
 
 MIDDLEWARE = [
@@ -121,3 +122,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# set the celery broker url
+CELERY_BROKER_URL = 'amqp://l1fasi:123456789@localhost/parallel_programming'
+
+# set the celery timezone
+CELERY_TIMEZONE = 'UTC'

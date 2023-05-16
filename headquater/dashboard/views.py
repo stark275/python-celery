@@ -1,3 +1,9 @@
 from django.shortcuts import render
 
-# Create your views here.
+app_name = 'dashboard'
+
+def index(request):
+    return render(request, 'dashboard/index.html')
+
+def send_message(request):
+    return False
