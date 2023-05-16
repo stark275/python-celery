@@ -43,7 +43,7 @@
             <h3>Ventes</h3>
             <form method='post' action="{% url 'sales:sale' %}">
               {% csrf_token %}
-              <p>
+              
               <select class="form-select" name="sale" aria-label="Default select example">
                   <option selected value="sardine:1">Sardine 1$</option>
                   <option value="Sac:15">Sac 15$</option>
