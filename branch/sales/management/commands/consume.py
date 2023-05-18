@@ -14,7 +14,9 @@ class Command(BaseCommand):
                 host='localhost',
                 port=5672,
                 virtual_host='parallel_programming',
-                credentials=credentials
+                credentials=credentials,
+                heartbeat=600,
+                blocked_connection_timeout=300
             )
         )
 
@@ -22,7 +24,7 @@ class Command(BaseCommand):
 
         channel.basic_consume(queue='matadi', on_message_callback=self.get_messages, auto_ack=True)
         self.stdout.write(
-                self.style.SUCCESS("Started Consuming...")
+                self.style.SUCCESS("Started Consuming....")
             )
         channel.start_consuming()
         

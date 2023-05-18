@@ -10,10 +10,18 @@ branch_id = 'MA:'
 
 def index(request):
 
-    message = Message.objects.all()
+    messages = Message.objects.all() 
+    msgs = []
 
+    if (len(messages) > 0):
+        for item in messages :
+            single_sale = item.content[2:].split(':')
+            if (single_sale[0] == 'MA'):
+                msgs.append(single_sale[1])
+
+    # dd(msgs)
     return render(request, 'sales/index.html',{
-        'messages': message
+        'messages': msgs
     })
 
 def sale(request):

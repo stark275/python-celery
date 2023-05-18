@@ -6,7 +6,9 @@ connexion = pika.BlockingConnection(
         host='localhost',
         port=5672,
         virtual_host='parallel_programming',
-        credentials=credentials
+        credentials=credentials,
+        heartbeat=600,
+        blocked_connection_timeout=300
     )
 )
 

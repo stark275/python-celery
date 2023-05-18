@@ -23,7 +23,7 @@ class Command(BaseCommand):
         channel.basic_consume(queue='sales', on_message_callback=self.get_sales, auto_ack=True)
         
         self.stdout.write(
-                self.style.SUCCESS("Started Consuming...")
+                self.style.SUCCESS("Started Consuming...1")
             )
         channel.start_consuming()
         
