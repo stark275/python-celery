@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .messages.producer import publish_message
 from .models import Sale
+from .tasks import add
 
 app_name = 'dashboard'
 
@@ -11,6 +12,7 @@ def index(request):
 
     # s = sales[0].sale[2:].split(':')[0]
     # dd(s) 
+    add.delay(4,9)
 
     branches = {
         'matadi': [],

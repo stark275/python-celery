@@ -14,7 +14,7 @@ connexion = pika.BlockingConnection(
 
 channel = connexion.channel()
 
-channel.exchange_declare('operations', durable=True, exchange_type='topic')
+channel.exchange_declare('operations', durable=True, exchange_type='topic') # sales.*
 channel.queue_declare(queue= 'sales')
 channel.queue_bind(exchange='operations', queue='sales', routing_key='sales')
 
