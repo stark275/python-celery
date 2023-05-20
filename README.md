@@ -13,6 +13,13 @@ https://www.cloudamqp.com/blog/the-relationship-between-connections-and-channels
 [Partie 1](https://youtu.be/eSN0otKzYOE)
 [Partie 2](https://youtu.be/Wiw7oOgBjFs)
 
+## Django + Celery + rabbitMQ
+[Configuration 1](https://simpleisbetterthancomplex.com/tutorial/2017/08/20/how-to-use-celery-with-django.html)
+
+[Configuration 2 (Vu pendant les TP)](https://dontrepeatyourself.org/post/asynchronous-tasks-in-django-with-celery-and-rabbitmq/)
+
+[Avec recuperation des résultats après un traitement d'un worker Celery](https://github.com/stark275/python-celery/blob/main/headquater/dashboard/management/commands/consume.py)
+
 ## Communication entre deux applications django via RabbitMQ
 
 [Communication inter-instance](https://www.section.io/engineering-education/communicating-between-your-django-apis-using-rabbitmq/)
