@@ -30,3 +30,9 @@ est peu faisable via une vue Django. L'une des piste de solution c'est de créer
 
 Docummentation officielle:
 [Custom command](https://docs.djangoproject.com/fr/4.2/howto/custom-management-commands/)
+
+Conteneuriser une application Django
+
+[Docker + Django 1](https://medium.com/backticks-tildes/how-to-dockerize-a-django-application-a42df0cb0a99)
+
+[Docker + Django 2](https://blog.logrocket.com/dockerizing-django-app/)
