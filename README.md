@@ -33,6 +33,8 @@ Docummentation officielle:
 
 Conteneuriser une application Django
 
+[Fondamentaux sur docker](https://youtu.be/Jpesrg2R9ag)
+
 [Video Docker + Django part 1](https://youtu.be/W5Ov0H7E_o4)
 
 [Video Docker + Django part 2](https://www.youtube.com/watch?v=aMqs_y6dZw4)
