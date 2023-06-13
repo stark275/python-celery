@@ -58,6 +58,8 @@ Conteneuriser une application Django
 
 [Installation Avec Exemple](https://ubuntu.com/tutorials/install-a-local-kubernetes-with-microk8s#1-overview)
 
+[Cluester Multi nodes](https://ubuntu.com/tutorials/getting-started-with-kubernetes-ha#4-create-a-microk8s-multinode-cluster)
+
 ## MicroK8s Commands
 
 Get Nodes :
