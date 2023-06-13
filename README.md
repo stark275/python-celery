@@ -42,3 +42,34 @@ Conteneuriser une application Django
 [Docker + Django 1](https://medium.com/backticks-tildes/how-to-dockerize-a-django-application-a42df0cb0a99)
 
 [Docker + Django 2](https://blog.logrocket.com/dockerizing-django-app/)
+
+## Meilleur video python + Celery
+
+[Playlist full](https://youtube.com/playlist?list=PLLz6Bi1mIXhHKA1Szy2aj9Jbs6nw9fhNY)
+
+[part 2](https://youtu.be/xZ3kNS_G6vs)
+
+
+
+## Microk8s
+[Installation All](https://microk8s.io/docs/install-windows)
+
+[Installation Win10/11](https://microk8s.io/docs/install-windows)
+
+[Installation Avec Exemple](https://ubuntu.com/tutorials/install-a-local-kubernetes-with-microk8s#1-overview)
+
+## MicroK8s Commands
+
+Get Nodes :
+    microk8s kubectl get nodes
+
+Get services :
+    microk8s kubectl get services
+
+get Namespaces :
+    microk8s kubectl get all --all-namespaces
+
+see pods and and current deployment
+    kubectl get pod -o wide
+
+
