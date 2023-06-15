@@ -1,0 +1,4 @@
+sudo systemctl restart docker.socket docker.service
+docker rm {container_id}
+
+docker run --name l1nginx -p 8081:80 -d -v /home/daenerys/projects/fasi/parallel programming/docker:/usr/share/nginx/html nginx

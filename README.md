@@ -75,3 +75,8 @@ see pods and and current deployment
     kubectl get pod -o wide
 
 
+## Créér des images personnalisées et les envoyer sur docker hub
+
+[Video](https://www.youtube.com/watch?v=ASNL27a7sE4)
+
+

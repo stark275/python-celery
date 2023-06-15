@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    volumes:
+      - .:/django
+    ports:
+      - 8002:8002
+    image: app:l1inglog
+    container_name: l1inglog
+    command: python manage.py runserver 0.0.0.0:8002
