@@ -80,3 +80,7 @@ see pods and and current deployment
 [Video](https://www.youtube.com/watch?v=ASNL27a7sE4)
 
 
+## Elastic Search 
+
+[Videos](https://youtube.com/playlist?list=PLn6POgpklwWrcd9l6258Md5o60-_uRvv3)
+
