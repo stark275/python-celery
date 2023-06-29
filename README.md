@@ -84,3 +84,7 @@ see pods and and current deployment
 
 [Videos](https://youtube.com/playlist?list=PLn6POgpklwWrcd9l6258Md5o60-_uRvv3)
 
+## Kubernetes complèt debutant 
+
+[Vidéo](https://youtu.be/X48VuDVv0do)
+
