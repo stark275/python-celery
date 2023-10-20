@@ -1,11 +1,58 @@
 version: "3.8"
+networks:
+  django_docker:
+
 services:
   app:
     build: .
     volumes:
       - .:/django
     ports:
-      - 8002:8002
-    image: app:l1inglog
-    container_name: l1inglog
-    command: python manage.py runserver 0.0.0.0:8002
+      - ${APP_PORT}:8002
+    image: app:django
+    container_name: django
+    command: python manage.py runserver 0.0.0.0:${APP_PORT}
+    networks:
+      - django_docker
+
+
+  mysql:
+    image: mysql
+    container_name: ${MYSQL_SERVICE_NAME}
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./docker/mysql:/var/lib/mysql
+      # - ./docker/ssl:/usr/lib/ssl/
+    ports:
+      - "3306:3306"
+    healthcheck:
+        test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+        interval: 10s
+        timeout: 5s
+        retries: 3
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB}
+      # MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - django_docker
+
+  pma:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma_django_docker
+    restart: always
+    ports:
+      - '${PMA_PORT}:80'
+    environment:
+      PMA_HOST: ${MYSQL_SERVICE_NAME}
+      UPLOAD_LIMIT: 30M
+      MAX_EXECUTION_TIME: 3600
+    depends_on:
+      - mysql
+        # condition: service_healthy
+    networks:
+      - django_docker
