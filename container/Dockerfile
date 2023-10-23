@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3.10
 ENV PYTHONUNBUFFERED=1
 WORKDIR /django
 
@@ -24,6 +24,10 @@ COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
 RUN pip3 install mysqlclient==2.2.0
+# RUN pip3 install mysql-connector-python==8.0.26
+RUN pip3 install django-dump-die==0.1.7
+RUN apt-get install nano
+RUN pip3 install pika
 COPY ./ ./
 CMD [ "python", "manage.py", "runserver", "0.0.0.0:8003" ]
 EXPOSE 8003

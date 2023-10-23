@@ -5,16 +5,22 @@ networks:
 services:
   app:
     build: .
+    restart: always
     volumes:
       - .:/django
+      - ./tm/base.py:/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py
     ports:
       - ${APP_PORT}:8002
     image: app:django
     container_name: django
+    depends_on:
+      mysql :
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     command: python manage.py runserver 0.0.0.0:${APP_PORT}
     networks:
       - django_docker
-
 
   mysql:
     image: mysql
@@ -54,5 +60,41 @@ services:
     depends_on:
       - mysql
         # condition: service_healthy
+    networks:
+      - django_docker
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq_dgtcp_prod
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RBTMQ_UI_USER}
+      - RABBITMQ_DEFAULT_PASS=${RBTMQ_UI_PASSWORD}
+    ports:
+      - "${RBTMQ_PORT}:5672"
+      - "${RBTMQ_UI_PORT}:15672"
+    volumes:
+      - ./docker/rabbitmq/data:/var/lib/rabbitmq/mnesia
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - django_docker
+
+  dbexecutedeamon:
+    build: ./tm
+    volumes:
+      - .:/deamon
+      # - ./ssl:/usr/lib/ssl/
+    image: deamon:dbe
+    container_name: dbexecutedeamon
+    restart: on-failure
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy    
+    command: ["python3", "./tm/dbexecutedeamon.py"]
     networks:
       - django_docker
