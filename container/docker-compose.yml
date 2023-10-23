@@ -9,6 +9,8 @@ services:
     volumes:
       - .:/django
       - ./tm/base.py:/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/base.py
+      - ./tm/SQLBrokerPublisher.py:/usr/local/lib/python3.10/site-packages/django/db/backends/mysql/SQLBrokerPublisher.py
+
     ports:
       - ${APP_PORT}:8002
     image: app:django
@@ -31,7 +33,7 @@ services:
       - ./docker/mysql:/var/lib/mysql
       # - ./docker/ssl:/usr/lib/ssl/
     ports:
-      - "3306:3306"
+      - "33060:3306"
     healthcheck:
         test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
         interval: 10s

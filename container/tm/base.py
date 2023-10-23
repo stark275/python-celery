@@ -32,6 +32,11 @@ from .operations import DatabaseOperations
 from .schema import DatabaseSchemaEditor
 from .validation import DatabaseValidation
 
+# The code  bellow is not Natural in this file
+from .SQLBrokerPublisher import *
+# The code  above is not Natural in this file
+
+
 version = Database.version_info
 if version < (1, 4, 0):
     raise ImproperlyConfigured('mysqlclient 1.4.0 or newer is required; you have %s.' % Database.__version__)
@@ -49,9 +54,6 @@ django_conversions = {
 # versions like 5.0.24 and 5.0.24a as the same).
 server_version_re = _lazy_re_compile(r'(\d{1,2})\.(\d{1,2})\.(\d{1,2})')
 
-def check_read_query( string):
-    keywords = ['insert', 'update', 'delete']
-    return any(string.lower().startswith(k) for k in keywords)
 
 
 class CursorWrapper:
@@ -71,47 +73,21 @@ class CursorWrapper:
 
     def __init__(self, cursor):
         self.cursor = cursor
+        # The code  bellow is not Natural in this file
+        self.sqlPublisher = SQLBrokerPublisher()
+        # The code  above is not Natural in this file
+
 
     
     def execute(self, query, args=None):
         try:
-            # args is None means no string interpolation
-            if(check_read_query(query)):
-
-                credentials = pika.PlainCredentials('guest', 'guest')
-                connexion = pika.BlockingConnection(
-                    pika.ConnectionParameters(
-                        host='rabbitmq',
-                        port=5672,
-                        virtual_host='/',
-                        credentials=credentials
-                    )
-                )
-                
-                channel = connexion.channel()
-
-                # Connection a l'exchange appelé message, qui est durable et qui a le type topic
-                exchange_name = 'erp'
-                creates_queue = 'eng.created'
-                create_route_key = 'created'
-
-                channel.exchange_declare(exchange_name, durable=True, exchange_type='topic')
-
-                channel.queue_declare(queue=creates_queue)
-                channel.queue_bind(exchange=exchange_name, queue=creates_queue, routing_key=create_route_key)
-               
-                message = str(query)+'~~~'+str(args)
-                channel.basic_publish(
-                    exchange=exchange_name,
-                    routing_key=create_route_key,
-                    body= message)
-                
-                print(query)
-                return any
-            
+            # The code  bellow is not Natural in this file
+            if(check_read_query(query) and dont_contain_django_tables(query)): 
+                return self.sqlPublisher.bublish(query, args)
+            # The code  above is not Natural in this file
+ 
             return self.cursor.execute(query, args)
-
-   
+  
         except Database.OperationalError as e:
             # Map some error codes to IntegrityError, since they seem to be
             # misclassified and Django would prefer the more logical place.
