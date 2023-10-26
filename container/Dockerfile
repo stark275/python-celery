@@ -28,6 +28,13 @@ RUN pip3 install mysqlclient==2.2.0
 RUN pip3 install django-dump-die==0.1.7
 RUN apt-get install nano
 RUN pip3 install pika
+RUN pip3 install Redis
+
+RUN adduser --disabled-password --gecos '' django
+RUN echo $(id -u django) > /uid.txt
+# USER django
+
+
 COPY ./ ./
 CMD [ "python", "manage.py", "runserver", "0.0.0.0:8003" ]
 EXPOSE 8003

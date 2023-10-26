@@ -100,3 +100,39 @@ services:
     command: ["python3", "./tm/dbexecutedeamon.py"]
     networks:
       - django_docker
+  
+  ########################### Redis ############################
+  rediserver:
+    container_name: redis-server
+    image: redis
+    restart: always
+    ports:
+      - ${REDDIS_PORT}:6379 
+    volumes:
+      - ./docker/redis:/data
+    entrypoint: redis-server --appendonly yes
+    networks:
+      - django_docker
+########################### Celery Worker ############################
+  celery:
+    build: .
+    # container_name: celery_rc
+    restart: always
+    # command: bash -c "celery -A fasi worker -l info --uid=$$(cat /uid.txt)"
+    command: bash -c "celery -A fasi worker -l info "
+    volumes:
+      - .:/django
+    environment:
+        DOCKER_CONTAINER : 1
+        # CELERY_RESULT_BACKEND : 'django-db'
+        CELERY_CACHE_BACKEND :  'django-cache'
+        CELERY_BROKER_URL : 'redis://redis-server:6379'
+        CELERY_RESULT_BACKEND : 'redis://redis-server:6379'
+        DEBUG : 'True'
+        ALLOWED_HOSTS: '["*"]'
+    
+    depends_on:
+        - app
+        - rediserver
+    networks:
+        - django_docker

@@ -63,7 +63,11 @@ class SQLBrokerPublisher:
 
                 channel.queue_declare(queue=creates_queue)
                 channel.queue_bind(exchange=exchange_name, queue=creates_queue, routing_key=create_route_key)
-               
+
+                message = ''
+                if isinstance(args, list):
+                    args = tuple(args)
+                
                 message = str(query)+'~~~'+str(args)
                 channel.basic_publish(
                     exchange=exchange_name,

@@ -5,6 +5,7 @@ app_name = 'studentModule'
 urlpatterns = [
     # ex: /students/
     path("", views.index, name="index"),
+    path('get-task-info/', views.get_task_info, name='get_task_info'),
 
     # path("sale/", views.sale, name="sale"),
 ] 

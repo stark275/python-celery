@@ -1,1 +1,77 @@
-<h1>YOW</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celery Global Context</title>
+</head>
+<style>
+    #progess{
+        background-color: blue;
+        height: 40px;
+        width: 10%;
+    }
+</style>
+<body>
+   
+
+    <div id="progress" style="background-color: blue;height: 40px; width: 3%;">...</div>
+    {% csrf_token %}
+    {% if tasks %}
+        <ul class="list-group">
+        {% for id in tasks %}
+        <li class="list-group-item">Task Id: {{id}}</li>
+        {% endfor %}
+        </ul>
+        {% else %}
+        <p>No tasks are available.</p>
+    {% endif %}
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script>
+
+        
+        function updateProgress(task_ids) {
+            //console.log(task_ids)
+            $.ajax({
+                type: 'POST',
+                url: '/students/get-task-info/',  // URL to your view that serves new info
+                data: {
+                    'task_ids' : JSON.stringify(task_ids),
+                    'csrfmiddlewaretoken' : '{{ csrf_token }}',     
+                },
+                success: function(data) {
+                    // $('#progress').css({'width': data['current'] + '%'});
+                    if (data['state'] != 'PENDING' && data['state'] != 'PROGRESS') {
+
+                        console.log(data)
+                       // if ('result' in data) {
+                            // Show result
+                       // }
+                    }    
+                },
+                error: function(data) {
+                    //alert('Error: ' + data);
+                    console.log(data)
+                }
+            });
+        }
+
+        task_ids = {{ tasks|safe}}
+        console.log(task_ids)
+        setInterval(function(){
+            updateProgress(task_ids)
+        },3000)
+        
+        {% comment %} var task_group = `{
+            "lot" : 10,
+            "task_ids" : {{ tasks|safe}},
+            "displayProgress" : false
+        }` {% endcomment %}
+        {% comment %} " {{ tasks|safe}}; {% endcomment %}
+        {% comment %} console.log(task_group) {% endcomment %}
+
+
+    </script>
+</body>
+</html>
