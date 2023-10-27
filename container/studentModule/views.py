@@ -6,6 +6,7 @@ from django.db import connection
 from django.http import JsonResponse
 from celery.result import AsyncResult
 import ast
+import json
 
 # Create your views here.
 
@@ -20,38 +21,59 @@ def index(request):
 
     for i in range(3):
         result = add.delay(i)
-        # Créer un objet AsyncResult avec l'ID de la tâche
-        # async_result = AsyncResult(result.task_id)
-
         celery_tasks.append(result.task_id)
 
-    # for query in connection.queries:
-    #     print(query['sql'])
-    # Soumission des tâches à la file d'attente
-    # results = [add.delay(i) for i in range(100)]
-    # # Suivi de la progression
-    # while not all(result.ready() for result in results):
-    #     completed = sum(result.ready() for result in results)
-    #     print(f"Progress: {completed}%")
-    #     time.sleep(1)
+    # add_new_payment_group(request,{
+    #     "payment_lot" : 28,
+    #     "payment_ids" : celery_tasks,
+    #     "show_progress" : True
+    # })
+    
+    # request.session['payment_tasks'] = []
+    get_progress_level(request, payment_lot=24)
 
-    # dd('LOL')
+    vd(request.session['payment_tasks'])
+
 
     return render(request, 'studentModule/index.html',{
         'tasks': celery_tasks
     })
 
+def vd(myvar):
+    json_lisible = json.dumps(myvar, indent=4)
+    print(json_lisible)
+
+def get_progress_level(request, payment_lot=None):
+    for i, group in enumerate(request.session['payment_tasks']):
+        if group['payment_lot'] == payment_lot :
+            for id in group['payment_ids']:
+                if isDone(id):
+                    request.session['payment_tasks'][i]['payment_ids'].remove(id)
+                    request.session.modified = True
+                print(request.session['payment_tasks'][i]['payment_ids'])
+            break
+
+def get_percent(level, max):
+    if max == 0:
+        return 0
+    return (level*100)/max
+
+def add_new_payment_group(request,group):
+    if 'payment_tasks' not in request.session:
+        request.session['payment_tasks'] = []
+
+    request.session['payment_tasks'].append(group)
+    print(request.session['payment_tasks'])
+    request.session.modified = True
+
+   
 def get_task_info(request):
     task_ids = request.POST.get('task_ids', None)
-
     tasks = ast.literal_eval(task_ids)
-
-    # print(tasks[0])
-    if isinstance(tasks, list):
-        print("C'est une liste") 
-    elif isinstance(tasks, str):
-        print("C'est une chaîne de caractères") 
     done_tasks = []
+    print(request.session['payment_tasks'])
+
+    i=1
     if tasks is not None:
         for id in tasks:
             if isDone(id):
@@ -63,10 +85,10 @@ def get_task_info(request):
 
 def isDone(task_id):
     task = AsyncResult(task_id)
-    print(task_id)
-    print(task.state)
-    print(task.result)
-    print(task.ready())
+    # print(task_id)
+    # print(task.state)
+    # print(task.result)
+    # print(task.ready())
 
     if task.ready(): 
         return True
