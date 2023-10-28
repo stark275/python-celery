@@ -19,24 +19,27 @@ def index(request):
 
     celery_tasks = []
 
-    for i in range(3):
+    for i in range(1000):
         result = add.delay(i)
         celery_tasks.append(result.task_id)
 
-    # add_new_payment_group(request,{
-    #     "payment_lot" : 28,
-    #     "payment_ids" : celery_tasks,
-    #     "show_progress" : True
-    # })
+    lot_id = 32
+    add_new_payment_group(request,{
+        "payment_lot" : lot_id,
+        "payment_ids" : celery_tasks,
+        "task_count" : len(celery_tasks),
+        "show_progress" : True
+
+    })
     
     # request.session['payment_tasks'] = []
-    get_progress_level(request, payment_lot=24)
 
     vd(request.session['payment_tasks'])
 
 
     return render(request, 'studentModule/index.html',{
-        'tasks': celery_tasks
+        'tasks': celery_tasks,
+        'lot_id': lot_id
     })
 
 def vd(myvar):
@@ -50,13 +53,16 @@ def get_progress_level(request, payment_lot=None):
                 if isDone(id):
                     request.session['payment_tasks'][i]['payment_ids'].remove(id)
                     request.session.modified = True
-                print(request.session['payment_tasks'][i]['payment_ids'])
+                # print(request.session['payment_tasks'][i]['payment_ids'])
+            done_tasks_count = len(request.session['payment_tasks'][i]['payment_ids'])
+            total_tasks_count = request.session['payment_tasks'][i]['task_count']
+            return get_percent(done_tasks_count, total_tasks_count)
             break
 
 def get_percent(level, max):
     if max == 0:
         return 0
-    return (level*100)/max
+    return 100 - (level*100)/max
 
 def add_new_payment_group(request,group):
     if 'payment_tasks' not in request.session:
@@ -66,21 +72,27 @@ def add_new_payment_group(request,group):
     print(request.session['payment_tasks'])
     request.session.modified = True
 
-   
 def get_task_info(request):
-    task_ids = request.POST.get('task_ids', None)
-    tasks = ast.literal_eval(task_ids)
-    done_tasks = []
-    print(request.session['payment_tasks'])
+    lot = int(request.POST.get('lot_id', None))
+    print(lot)
+    level = get_progress_level(request, payment_lot=lot)
+    return JsonResponse({lot: level})
 
-    i=1
-    if tasks is not None:
-        for id in tasks:
-            if isDone(id):
-                done_tasks.append(id)
-        return JsonResponse({'done_tasks': done_tasks})
-    else:
-        return JsonResponse({'error': 'No task_id in the request'})
+   
+# def get_task_info(request):
+#     task_ids = request.POST.get('task_ids', None)
+#     tasks = ast.literal_eval(task_ids)
+#     done_tasks = []
+#     print(request.session['payment_tasks'])
+
+#     i=1
+#     if tasks is not None:
+#         for id in tasks:
+#             if isDone(id):
+#                 done_tasks.append(id)
+#         return JsonResponse({'done_tasks': done_tasks})
+#     else:
+#         return JsonResponse({'error': 'No task_id in the request'})
 
 
 def isDone(task_id):

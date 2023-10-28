@@ -16,7 +16,7 @@
    
 
     <div id="progress" style="background-color: blue;height: 40px; width: 3%;">...</div>
-    {% csrf_token %}
+    {% comment %} {% csrf_token %} {% endcomment %}
     {% if tasks %}
         <ul class="list-group">
         {% for id in tasks %}
@@ -29,39 +29,34 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script>
-
         
-        function updateProgress(task_ids) {
-            //console.log(task_ids)
+        
+        function updateProgress(lot_id) {
+            //console.log(lot_id)
             $.ajax({
                 type: 'POST',
                 url: '/students/get-task-info/',  // URL to your view that serves new info
                 data: {
-                    'task_ids' : JSON.stringify(task_ids),
+                    'lot_id' : JSON.stringify(lot_id),
                     'csrfmiddlewaretoken' : '{{ csrf_token }}',     
                 },
                 success: function(data) {
-                    // $('#progress').css({'width': data['current'] + '%'});
-                    if (data['state'] != 'PENDING' && data['state'] != 'PROGRESS') {
-
-                        console.log(data)
-                       // if ('result' in data) {
-                            // Show result
-                       // }
-                    }    
+                    console.log(data)
+                    $('#progress').css({'width': data[lot_id] + '%'});   
                 },
                 error: function(data) {
-                    //alert('Error: ' + data);
+                    console.log(0)
                     console.log(data)
                 }
             });
         }
 
-        task_ids = {{ tasks|safe}}
-        console.log(task_ids)
-        setInterval(function(){
-            //updateProgress(task_ids)
-        },3000)
+        {% comment %} task_ids = {{ tasks|safe}} {% endcomment %}
+        lot_id = {{lot_id}}
+        console.log(lot_id)
+         setInterval(function(){
+            updateProgress(lot_id)
+        },2000)
         
         {% comment %} var task_group = `{
             "lot" : 10,
