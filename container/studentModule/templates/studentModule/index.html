@@ -1,22 +1,24 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Celery Global Context</title>
 </head>
-<style>
-    #progess{
-        background-color: blue;
-        height: 40px;
-        width: 10%;
-    }
-</style>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <body>
    
-
-    <div id="progress" style="background-color: blue;height: 40px; width: 3%;">...</div>
-    {% comment %} {% csrf_token %} {% endcomment %}
+    
+    <div id="progress" style="background-color: blue;height: 40px; width: 3%; display:none">...</div>
+    <br>
+    <div class="container"> 
+        <div class="progress">
+            
+        </div>
+    <div>
     {% if tasks %}
         <ul class="list-group">
         {% for id in tasks %}
@@ -28,9 +30,10 @@
     {% endif %}
 
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
     <script>
-        
-        
+       
         function updateProgress(lot_id) {
             //console.log(lot_id)
             $.ajax({
@@ -41,21 +44,105 @@
                     'csrfmiddlewaretoken' : '{{ csrf_token }}',     
                 },
                 success: function(data) {
-                    console.log(data)
-                    $('#progress').css({'width': data[lot_id] + '%'});   
+                    //console.log(data)
+                   // $('#progress').css({'width': data[lot_id] + '%'});  
+                    $('.toastify').html('Paiement en Cours ... : <strong>'+data[lot_id]+'<strong>% <button type="button" aria-label="Close" class="toast-close">✖</button>');   
+                    $('.progress').html('<div class="progress-bar" role="progressbar" aria-valuenow="'+data[lot_id]+'" aria-valuemin="0" aria-valuemax="100" style="width: '+data[lot_id]+'%;">'+data[lot_id]+'%</div>');   
+                    
+
                 },
                 error: function(data) {
-                    console.log(0)
                     console.log(data)
                 }
             });
         }
 
-        {% comment %} task_ids = {{ tasks|safe}} {% endcomment %}
+        function saveProgresses(lot_id){
+
+            saved_progresses = getProgresses()
+            if(saved_progresses == null){
+                localStorage.setItem("progresses","[]")
+                saved_progresses = getProgresses()
+                //console.log(saved_progresses)
+            }
+            
+
+            saved_progresses.push(JSON.parse(`{"${lot_id}" : 0}`))
+            progresses = JSON.stringify(saved_progresses)
+            localStorage.setItem("progresses",progresses)
+            return saved_progresses        
+        }
+
+        function getProgresses(){
+            data = localStorage.getItem("progresses")
+            return JSON.parse(data)
+        }
+
+        localStorage.setItem("progresses","[]")
         lot_id = {{lot_id}}
+        console.log(saveProgresses(lot_id)) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+        Toastify({
+            text: "This is a toast",
+            duration: -1,
+           // destination: "https://github.com/apvarun/toastify-js",
+            newWindow: true,
+            close: true,
+            gravity: "bottom", // `top` or `bottom`
+            position: "right", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            className: "info",
+           
+            onClick: function(){} // Callback after click
+          }).showToast();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        {% comment %} task_ids = {{ tasks|safe}} {% endcomment %}
+        
         console.log(lot_id)
-         setInterval(function(){
+        var i = setInterval(function(){
             updateProgress(lot_id)
+        
         },2000)
         
         {% comment %} var task_group = `{

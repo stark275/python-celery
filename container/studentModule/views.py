@@ -19,18 +19,18 @@ def index(request):
 
     celery_tasks = []
 
-    for i in range(1000):
+    for i in range(10):
         result = add.delay(i)
         celery_tasks.append(result.task_id)
 
     lot_id = 32
-    add_new_payment_group(request,{
-        "payment_lot" : lot_id,
-        "payment_ids" : celery_tasks,
-        "task_count" : len(celery_tasks),
-        "show_progress" : True
+    # add_new_payment_group(request,{
+    #     "payment_lot" : lot_id,
+    #     "payment_ids" : celery_tasks,
+    #     "task_count" : len(celery_tasks),
+    #     "show_progress" : True
 
-    })
+    # })
     
     # request.session['payment_tasks'] = []
 
