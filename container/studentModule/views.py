@@ -10,6 +10,9 @@ import json
 
 # Create your views here.
 
+def profile(request):
+    return render(request, 'studentModule/profile.html')
+
 def index(request):
     
     # student = Student(name='Test Insert FABRICE', crated_at=timezone.now())
@@ -19,17 +22,17 @@ def index(request):
 
     celery_tasks = []
 
-    for i in range(10):
+    for i in range(1000):
         result = add.delay(i)
         celery_tasks.append(result.task_id)
 
-    lot_id = 32
+    lot_id = 39
+
     # add_new_payment_group(request,{
     #     "payment_lot" : lot_id,
     #     "payment_ids" : celery_tasks,
     #     "task_count" : len(celery_tasks),
     #     "show_progress" : True
-
     # })
     
     # request.session['payment_tasks'] = []
@@ -78,30 +81,8 @@ def get_task_info(request):
     level = get_progress_level(request, payment_lot=lot)
     return JsonResponse({lot: level})
 
-   
-# def get_task_info(request):
-#     task_ids = request.POST.get('task_ids', None)
-#     tasks = ast.literal_eval(task_ids)
-#     done_tasks = []
-#     print(request.session['payment_tasks'])
-
-#     i=1
-#     if tasks is not None:
-#         for id in tasks:
-#             if isDone(id):
-#                 done_tasks.append(id)
-#         return JsonResponse({'done_tasks': done_tasks})
-#     else:
-#         return JsonResponse({'error': 'No task_id in the request'})
-
-
 def isDone(task_id):
     task = AsyncResult(task_id)
-    # print(task_id)
-    # print(task.state)
-    # print(task.result)
-    # print(task.ready())
-
     if task.ready(): 
         return True
     return False

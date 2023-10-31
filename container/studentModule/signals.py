@@ -8,5 +8,5 @@ from .models import Student
 def pre_save_handler(sender, instance, *args, **kwargs):
     # Ici, vous pouvez inspecter l'instance qui est sur le point d'être enregistrée
     
-    print(" ---------- SIGNAL OUT-----------")
+    print(" ---------- SIGNAL OUT -----------")
   

@@ -35,7 +35,6 @@
     <script>
        
         function updateProgress(lot_id) {
-            //console.log(lot_id)
             $.ajax({
                 type: 'POST',
                 url: '/students/get-task-info/',  // URL to your view that serves new info
@@ -44,12 +43,8 @@
                     'csrfmiddlewaretoken' : '{{ csrf_token }}',     
                 },
                 success: function(data) {
-                    //console.log(data)
-                   // $('#progress').css({'width': data[lot_id] + '%'});  
-                    $('.toastify').html('Paiement en Cours ... : <strong>'+data[lot_id]+'<strong>% <button type="button" aria-label="Close" class="toast-close">✖</button>');   
-                    $('.progress').html('<div class="progress-bar" role="progressbar" aria-valuenow="'+data[lot_id]+'" aria-valuemin="0" aria-valuemax="100" style="width: '+data[lot_id]+'%;">'+data[lot_id]+'%</div>');   
-                    
-
+                    console.log(data)
+                    refreshProgress(data)
                 },
                 error: function(data) {
                     console.log(data)
@@ -57,48 +52,61 @@
             });
         }
 
-        function saveProgresses(lot_id){
-
-            saved_progresses = getProgresses()
-            if(saved_progresses == null){
-                localStorage.setItem("progresses","[]")
-                saved_progresses = getProgresses()
-                //console.log(saved_progresses)
-            }
+        function initProgresses(lot_id){
+            localStorage.setItem("inProgress",lot_id)
+            key = generateInprogressKey(lot_id)
+            progress = getProgresses(key)
+            if(progress != null){
+                localStorage.setItem(key,`{"${lot_id}":0}`)
+                return 1
+            }      
             
-
-            saved_progresses.push(JSON.parse(`{"${lot_id}" : 0}`))
-            progresses = JSON.stringify(saved_progresses)
-            localStorage.setItem("progresses",progresses)
-            return saved_progresses        
+            return 0
         }
 
-        function getProgresses(){
-            data = localStorage.getItem("progresses")
+        function generateInprogressKey(lot_id){
+            return 'p'+lot_id
+        }
+
+        function refreshProgress(updatedData){
+            key = generateInprogressKey(Object.keys(updatedData)[0]) 
+            localStorage.setItem(key,JSON.stringify(updatedData))
+            return getProgresses(key)         
+        }
+
+        function getProgresses(key){
+            data = localStorage.getItem(key)
             return JSON.parse(data)
         }
 
-        localStorage.setItem("progresses","[]")
-        lot_id = {{lot_id}}
-        console.log(saveProgresses(lot_id)) 
+        function getInProgressLotId(){
+            return parseInt(localStorage.getItem("inProgress"))
+        }
+
+        
+        function getInProgressLevel(key){
+            return getProgresses(key)
+        }
+
+        function refreshToast(value){
+            $('.toastify').html('Paiement en Cours ... : <strong>'+value+'<strong>% <button type="button" aria-label="Close" class="toast-close">✖</button>');   
+            $('.progress').html('<div class="progress-bar" role="progressbar" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100" style="width: '+value+'%;">'+value+'%</div>');          
+        }
+
+        // Un seul traitement à ls fois
+        localStorage.setItem("progresses","[]") // -1
 
 
 
+        // Recevoir le numero du lot
+        lot_id = {{lot_id}} // 0
 
+        // Initialiser
+        initProgresses(lot_id) // 1
+        
+        //console.log("id: "+ getInProgressLotId())
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
 
 
 
@@ -106,10 +114,10 @@
         
 
         Toastify({
-            text: "This is a toast",
+            text: "Paiement en Cours ...",
             duration: -1,
-           // destination: "https://github.com/apvarun/toastify-js",
-            newWindow: true,
+            destination: "http://localhost:8002/students/profile/",
+            newWindow: false,
             close: true,
             gravity: "bottom", // `top` or `bottom`
             position: "right", // `left`, `center` or `right`
@@ -119,41 +127,26 @@
             onClick: function(){} // Callback after click
           }).showToast();
 
+        /////////////////////////////////////////////////////////////////////////////
+        //console.log(lot_id)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        {% comment %} task_ids = {{ tasks|safe}} {% endcomment %}
-        
-        console.log(lot_id)
         var i = setInterval(function(){
-            updateProgress(lot_id)
-        
+            //Do only if getInProgressLotId() not nul
+
+            updateProgress(getInProgressLotId())
+
+            key = generateInprogressKey(getInProgressLotId())
+
+            console.log('---------------------')
+            console.log(getInProgressLevel(key))
+            console.log('---------------------')
+
+            value = getInProgressLevel(key)[getInProgressLotId()]
+            refreshToast(value)
+
+
         },2000)
         
-        {% comment %} var task_group = `{
-            "lot" : 10,
-            "task_ids" : {{ tasks|safe}},
-            "displayProgress" : false
-        }` {% endcomment %}
-        {% comment %} " {{ tasks|safe}}; {% endcomment %}
-        {% comment %} console.log(task_group) {% endcomment %}
-
-
     </script>
 </body>
 </html>

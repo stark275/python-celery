@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celery Global Context</title>
+</head>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<body>
+   
+    
+    <div id="progress" style="background-color: blue;height: 40px; width: 3%; display:none">...</div>
+    <br>
+    <div class="container"> 
+        <h1>Profile</h1>
+        <div class="progress" style="display:none">
+            
+        </div>
+    <div>
+    
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script>
+       
+        function updateProgress(lot_id) {
+            $.ajax({
+                type: 'POST',
+                url: '/students/get-task-info/',  // URL to your view that serves new info
+                data: {
+                    'lot_id' : JSON.stringify(lot_id),
+                    'csrfmiddlewaretoken' : '{{ csrf_token }}',     
+                },
+                success: function(data) {
+                    console.log(data)
+                    refreshProgress(data)
+                },
+                error: function(data) {
+                    console.log(data)
+                }
+            });
+        }
+
+        function initProgresses(lot_id){
+            localStorage.setItem("inProgress",lot_id)
+            key = generateInprogressKey(lot_id)
+            progress = getProgresses(key)
+            if(progress != null){
+                localStorage.setItem(key,`{"${lot_id}":0}`)
+                return 1
+            }       
+            return 0
+        }
+
+        function generateInprogressKey(lot_id){
+            return 'p'+lot_id
+        }
+
+        function refreshProgress(updatedData){
+            key = generateInprogressKey(Object.keys(updatedData)[0]) 
+            localStorage.setItem(key,JSON.stringify(updatedData))
+            return getProgresses(key)         
+        }
+
+        function getProgresses(key){
+            data = localStorage.getItem(key)
+            return JSON.parse(data)
+        }
+
+        function getInProgressLotId(){
+            return parseInt(localStorage.getItem("inProgress"))
+        }
+
+        function getInProgressLevel(key){
+            return getProgresses(key)
+        }
+
+        function refreshToast(value){
+            $('.toastify').html('Paiement en Cours ... : <strong>'+value+'<strong>% <button type="button" aria-label="Close" class="toast-close">✖</button>');   
+            
+            // Ne pas tenir compte en dehors de la page de paiement
+            $('.progress').html('<div class="progress-bar" role="progressbar" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100" style="width: '+value+'%;">'+value+'%</div>');          
+        }
+
+        
+        lot_id = (getInProgressLotId()) ? getInProgressLotId() : {% if lot_id  %}{{lot_id}}{% else %}{{'null'}}{% endif %} // 0
+
+        //console.log(getInProgressLotId())
+
+
+        initProgresses(lot_id) // 1
+
+        if(lot_id){
+            var i = setInterval(function(){
+                //Do only if getInProgressLotId() not nul
+                updateProgress(getInProgressLotId())
+
+                key = generateInprogressKey(getInProgressLotId())
+
+                console.log('---------------------')
+                console.log(getInProgressLevel(key))
+                console.log('---------------------')
+
+                value = getInProgressLevel(key)[getInProgressLotId()]
+                refreshToast(value)
+
+
+            },2000)
+
+            Toastify({
+                text: "Paiement en Cours ... ",
+                duration: -1,
+                destination: "http://localhost:8002/students",
+                newWindow: false,
+                close: true,
+                gravity: "bottom", // `top` or `bottom`
+                position: "right", // `left`, `center` or `right`
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                className: "info",
+                onClick: function(){
+                    localStorage.setItem("inProgress",null)
+                } // Callback after click
+            }).showToast();
+        }
+
+
+        // Stack other pages
+        // getInProgessLevel(id) -> getProgresses(id) -> localStorage()
+
+        /*
+          1. lot exist for the first time
+          2. getInProgressLotId() is set the use item
+          3. if getInProgressLevel() == 100, 1 and 2 and fadeOut Toast
+        */
+
+    </script>
+</body>
+</html>
