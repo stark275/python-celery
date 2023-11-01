@@ -22,20 +22,23 @@ def index(request):
 
     celery_tasks = []
 
-    for i in range(1000):
+    for i in range(200):
         result = add.delay(i)
         celery_tasks.append(result.task_id)
 
-    lot_id = 39
 
-    # add_new_payment_group(request,{
-    #     "payment_lot" : lot_id,
-    #     "payment_ids" : celery_tasks,
-    #     "task_count" : len(celery_tasks),
-    #     "show_progress" : True
-    # })
+    request.session['payment_tasks'] = []
+
+    lot_id = 78
+
+    add_new_payment_group(request,{
+        "payment_lot" : lot_id,
+        "payment_ids" : celery_tasks,
+        "task_count" : len(celery_tasks),
+        "show_progress" : True
+    })
     
-    # request.session['payment_tasks'] = []
+    
 
     vd(request.session['payment_tasks'])
 
@@ -56,7 +59,6 @@ def get_progress_level(request, payment_lot=None):
                 if isDone(id):
                     request.session['payment_tasks'][i]['payment_ids'].remove(id)
                     request.session.modified = True
-                # print(request.session['payment_tasks'][i]['payment_ids'])
             done_tasks_count = len(request.session['payment_tasks'][i]['payment_ids'])
             total_tasks_count = request.session['payment_tasks'][i]['task_count']
             return get_percent(done_tasks_count, total_tasks_count)
