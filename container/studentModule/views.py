@@ -26,7 +26,7 @@ def index(request):
 
     request.session['payment_tasks'] = []
 
-    lot_id = 80
+    lot_id = 89
 
     add_new_payment_group(request,{
         "payment_lot" : lot_id,

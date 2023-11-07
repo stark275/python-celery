@@ -76,6 +76,10 @@
             return parseInt(localStorage.getItem("inProgress"))
         }
 
+        function unSetInProgressLotId(){
+            localStorage.setItem("inProgress","null")
+        }
+
         function getInProgressLevel(key){
             return getProgresses(key)
         }
@@ -133,6 +137,7 @@
                     if(level == 100 || level == null){
                         clearInterval(i)
                         $('.toastify').html('<a href="http://google.com" style="color:white">✅ Voir les Paiements</a>')
+                        unSetInProgressLotId()
                     }
                     if( toast && level > 0  && level != null){
                         toast.showToast()
