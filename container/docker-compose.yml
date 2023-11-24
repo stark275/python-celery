@@ -20,7 +20,9 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    command: python manage.py runserver 0.0.0.0:${APP_PORT}
+    # command: python manage.py runserver 0.0.0.0:${APP_PORT}
+    command: gunicorn -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:${APP_PORT} --log-level debug --reload fasi.asgi:application
+
     networks:
       - django_docker
 

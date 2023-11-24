@@ -15,7 +15,7 @@
     <div id="progress" style="background-color: blue;height: 40px; width: 3%; display:none">...</div>
     <br>
     <div class="container"> 
-        <h1>Profile</h1>
+        <h1 id="title">Profile</h1>
         <div class="progress" style="display:none">
             
         </div>
@@ -24,7 +24,45 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
     <script>
+        console.clear()
+        console.log("Starting websocket connection...");
+        const websocketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+        const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/sql/`;
+        const socket = new WebSocket(wsEndpoint);
+    
+        // New event listener to capture incoming messages
+        socket.onmessage = function(event) {
+            console.log('Message received: ' + event.data);
+        };
+    
+        socket.addEventListener("error", (event) => {
+            console.error("WebSocket error:", event);
+        });
+        
+        socket.addEventListener("close", (event) => {
+            console.log("WebSocket connection closed:", event);
+        });
+    
+        // Wait for the connection to be open before sending a message
+        socket.onopen = function(event) {
+            console.log("Message sent: Hello!");
+            socket.send("HELLO SERVER");
+        };
+        var i = 0
+        // on click id="title"
+        window.onload = function(){
+            document.getElementById("title").onclick = function(){
+                console.log("Message sent: Hello!");
+                socket.send("HELLO SERVER" + i);
+                i++
+            }
+        }
+    
+    </script>
+
+    {% comment %} <script>
        
         function updateProgress(lot_id) {
             $.ajax({
@@ -110,7 +148,7 @@
         }
 
         tasks_group_id = {% if lot_id  %}{{lot_id}}{% else %}{{'null'}}{% endif %} 
-        {% comment %} console.log(tasks_group_id) {% endcomment %}
+        //console.log(tasks_group_id)
         lot_id = (tasks_group_id) ? tasks_group_id : getInProgressLotId() // 0
 
 
@@ -158,7 +196,7 @@
           3. if getInProgressLevel() == 100, 1 and 2 and fadeOut Toast
         */
 
-    </script>
+    </script> {% endcomment %}
     {% comment %} <script>
        
         function updateProgress(lot_id) {

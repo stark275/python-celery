@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
 from .models import *
@@ -6,6 +7,26 @@ from django.db import connection
 
 from .tasks_progession import *
 # Create your views here.
+
+# CHANNELS FOR ASYNC SYSTEM
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+def send_message(request):
+	print("CHANNEL")
+
+	message = request.GET.get('message', None)
+	channel_layer = get_channel_layer()
+
+	async_to_sync(channel_layer.group_send)(
+		"asynch_sql",
+		{
+			"type": "send_notification",
+			"message": message,
+		}
+	)
+     
+	return HttpResponse("Message sent!")
 
 def profile(request):
     return render(request, 'studentModule/profile.html')
@@ -17,30 +38,30 @@ def index(request):
     # st = Student.objects.all()
     # dd(st)
 
-    celery_tasks = []
+    # celery_tasks = []
 
-    for i in range(200):
-        result = add.delay(i)
-        celery_tasks.append(result.task_id)
+    # for i in range(200):
+    #     result = add.delay(i)
+    #     celery_tasks.append(result.task_id)
 
 
-    request.session['payment_tasks'] = []
+    # request.session['payment_tasks'] = []
 
-    lot_id = 89
+    # lot_id = 89
 
-    add_new_payment_group(request,{
-        "payment_lot" : lot_id,
-        "payment_ids" : celery_tasks,
-        "task_count" : len(celery_tasks),
-        "show_progress" : True
-    })
+    # add_new_payment_group(request,{
+    #     "payment_lot" : lot_id,
+    #     "payment_ids" : celery_tasks,
+    #     "task_count" : len(celery_tasks),
+    #     "show_progress" : True
+    # })
     
     
     vd(request.session['payment_tasks'])
 
 
     return render(request, 'studentModule/index.html',{
-        'tasks': celery_tasks,
-        'lot_id': lot_id
+        'tasks': [],
+        'lot_id': 1
     })
 

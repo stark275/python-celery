@@ -32,7 +32,7 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <script>
+    {% comment %} <script>
        
         function updateProgress(lot_id) {
             $.ajax({
@@ -114,7 +114,7 @@
         }
 
         tasks_group_id = {% if lot_id  %}{{lot_id}}{% else %}{{'null'}}{% endif %} 
-        {% comment %} console.log(tasks_group_id) {% endcomment %}
+        //console.log(tasks_group_id)
         lot_id = (tasks_group_id) ? tasks_group_id : getInProgressLotId() // 0
 
 
@@ -160,7 +160,9 @@
           3. if getInProgressLevel() == 100, 1 and 2 and fadeOut Toast
         */
 
-    </script>
+    </script> {% endcomment %}
+
+
 
     {% comment %} <script>
        

@@ -34,6 +34,13 @@ RUN adduser --disabled-password --gecos '' django
 RUN echo $(id -u django) > /uid.txt
 # USER django
 
+RUN pip3 install gunicorn
+RUN pip3 install uvicorn==0.23.1
+RUN pip3 install asgiref==3.7.2
+RUN pip3 install channels==4.0.0
+RUN pip3 install channels-redis==3.3.1
+RUN pip3 install 'uvicorn[standard]'
+
 
 COPY ./ ./
 CMD [ "python", "manage.py", "runserver", "0.0.0.0:8003" ]

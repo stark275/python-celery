@@ -7,6 +7,7 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("profile/", views.profile, name="profile"),
     path('get-task-info/', tasks_progession.get_task_info, name='get_task_info'),
+    path('send/', views.send_message, name='send_message'),
 
     # path("sale/", views.sale, name="sale"),
 ] 
