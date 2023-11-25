@@ -138,6 +138,15 @@ CELERY_TASK_SERIALIZER = 'json'
 
 ASGI_APPLICATION = 'ErpProject.asgi.application'
 
+# CHANNEL_LAYERS = {
+#     "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"},
+# }
+
 CHANNEL_LAYERS = {
-    "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"},
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis-server', 6379)],
+        },
+    },
 }

@@ -11,14 +11,16 @@ from .tasks_progession import *
 # CHANNELS FOR ASYNC SYSTEM
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+import asyncio
+from channels.http import AsgiRequest
 
-def send_message(request):
+async def send_message(request):
 	print("CHANNEL")
 
 	message = request.GET.get('message', None)
 	channel_layer = get_channel_layer()
 
-	async_to_sync(channel_layer.group_send)(
+	await channel_layer.group_send(
 		"asynch_sql",
 		{
 			"type": "send_notification",
@@ -27,6 +29,17 @@ def send_message(request):
 	)
      
 	return HttpResponse("Message sent!")
+
+def create_student(request):
+    if request.method == 'POST':
+        # Recevoir les données POST de manière asynchrone
+        name = request.POST.get('name')
+
+        create_student_task.delay(name)
+
+
+   
+    return HttpResponse("Message sent!")
 
 def profile(request):
     return render(request, 'studentModule/profile.html')

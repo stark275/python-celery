@@ -45,20 +45,46 @@
             console.log("WebSocket connection closed:", event);
         });
     
-        // Wait for the connection to be open before sending a message
+        {% comment %} // Wait for the connection to be open before sending a message
         socket.onopen = function(event) {
             console.log("Message sent: Hello!");
             socket.send("HELLO SERVER");
-        };
+        }; {% endcomment %}
         var i = 0
         // on click id="title"
         window.onload = function(){
+           // document.getElementById("title").onclick = function(){
+           //     console.log("Message sent: Hello!");
+           //     socket.send("HELLO SERVER" + i);
+           //     i++
+           // }
+
             document.getElementById("title").onclick = function(){
-                console.log("Message sent: Hello!");
-                socket.send("HELLO SERVER" + i);
-                i++
+                console.log('create student')
+
+                var name = 'Stark_'+i 
+                $.ajax(
+                    {
+                        type: 'POST',
+                        url: '/students/create-student/',  // URL to your view that serves new info
+                        data: {
+                            'name' : name,
+                            'csrfmiddlewaretoken' : '{{ csrf_token }}',     
+                        },
+                        success: function(data) {
+                            console.log(data)
+                        },
+                        error: function(data) {
+                            console.log(data)
+                        }
+                    }
+                )
             }
+
+
         }
+
+
     
     </script>
 

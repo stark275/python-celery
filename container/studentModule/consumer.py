@@ -1,6 +1,8 @@
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.template import Context, Template
+from .tasks import *
+
 import json 
 
 class SQLBrokerExecConsumer(AsyncWebsocketConsumer):
@@ -25,10 +27,12 @@ class SQLBrokerExecConsumer(AsyncWebsocketConsumer):
         # text_data contains the message from the client
         print(f"Message received: {text_data}")
 
+        notify.delay(1, f" [server receve] : {text_data}")
+
         # You can send a message back to the client
-        await self.send(text_data=json.dumps({
-            'message': 'Message received by the server Ohohrrrohorhoh '
-        }))
+        # await self.send(text_data=json.dumps({
+        #     'message': 'received by the server Ohohrrrohorhoh '
+        # }))
 
     async def send_notification(self, event):
         message = event['message']
@@ -37,3 +41,11 @@ class SQLBrokerExecConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': message
         }))
+
+    # async def send_via_celery(self, event):
+    #     message = event['message']
+    #     print(f"Message sent: {message}")
+    #     # Send the message to the client
+    #     await self.send(text_data=json.dumps({
+    #         'message': message
+    #     }))
