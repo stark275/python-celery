@@ -138,3 +138,25 @@ services:
         - rediserver
     networks:
         - django_docker
+
+  sqldeamon:
+    build: .
+    container_name: sqldeamon
+    restart: always
+    command: bash -c "celery -A fasi worker -l info --concurrency=1 -Q sql_queue"
+    volumes:
+      - .:/django
+    environment:
+        DOCKER_CONTAINER : 1
+        # CELERY_RESULT_BACKEND : 'django-db'
+        CELERY_CACHE_BACKEND :  'django-cache'
+        CELERY_BROKER_URL : 'redis://redis-server:6379'
+        CELERY_RESULT_BACKEND : 'redis://redis-server:6379'
+        DEBUG : 'True'
+        ALLOWED_HOSTS: '["*"]'
+    
+    depends_on:
+        - app
+        - rediserver
+    networks:
+        - django_docker

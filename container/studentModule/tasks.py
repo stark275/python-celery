@@ -14,7 +14,7 @@ def add(i):
 
     return i*i
 
-@shared_task
+@shared_task(queue='sql_queue')
 def create_student_unique_channel_task(name, user_id):
     
     print('USER CHANNEL CELERY')
@@ -36,6 +36,7 @@ def create_student_unique_channel_task(name, user_id):
         )
     # Exécutez la coroutine et obtenez le résultat
     async_to_sync(async_func)()
+
 
 @shared_task
 def create_student_task(name):
