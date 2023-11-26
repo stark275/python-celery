@@ -34,11 +34,16 @@ def create_student(request):
     if request.method == 'POST':
         # Recevoir les données POST de manière asynchrone
         name = request.POST.get('name')
-
         create_student_task.delay(name)
+    return HttpResponse("Message sent!")
 
+def create_student_unique_channel(request):
+    if request.method == 'POST':
+        # Recevoir les données POST de manière asynchrone
+        name = request.POST.get('name')
+        user_id = request.POST.get('user_id')
+        create_student_unique_channel_task.delay(name, user_id)
 
-   
     return HttpResponse("Message sent!")
 
 def profile(request):

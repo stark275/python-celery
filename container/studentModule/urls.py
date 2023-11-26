@@ -10,6 +10,7 @@ urlpatterns = [
     path('send/', views.send_message, name='send_message'),
 
     path('create-student/', views.create_student, name='create_student'),
+    path('create-student-unique-channel/', views.create_student_unique_channel, name='create_student_unique_channel'),
 
     # path("sale/", views.sale, name="sale"),
 ] 

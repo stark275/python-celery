@@ -9,12 +9,25 @@ class SQLBrokerExecConsumer(AsyncWebsocketConsumer):
     
     async def connect(self):
         # Add this consumer to the group
+        # await self.channel_layer.group_add(
+        #     "asynch_sql",
+        #     self.channel_name
+        # )
+
+        print("Connection established.(DBWriteConsumer)")
+        self.user_id = self.scope['url_route']['kwargs']['user_id']
+        print("(S) db-write-{}".format(self.user_id))
+
         await self.channel_layer.group_add(
-            "asynch_sql",
+            "db-write-{}".format(self.user_id),
             self.channel_name
         )
 
+
         await self.accept()
+        # await self.send(text_data=json.dumps({
+        #         'message': "(SQLBrokerExecConsumer) : db-write-{}".format(self.user_id)
+        #     }))
     
     async def disconnect(self, close_code):
         # Remove this consumer from the group when it disconnects
@@ -41,11 +54,3 @@ class SQLBrokerExecConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': message
         }))
-
-    # async def send_via_celery(self, event):
-    #     message = event['message']
-    #     print(f"Message sent: {message}")
-    #     # Send the message to the client
-    #     await self.send(text_data=json.dumps({
-    #         'message': message
-    #     }))

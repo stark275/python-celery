@@ -16,6 +16,9 @@
     <br>
     <div class="container"> 
         <h1 id="title">Profile</h1>
+
+        <h1 id="user">USER</h1>
+
         <div class="progress" style="display:none">
             
         </div>
@@ -26,10 +29,17 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <script>
+
+        let url = new URL(window.location.href);
+        let params = new URLSearchParams(url.search);
+
+        let user = (params.get("user")) ? params.get("user") : 1; //
+
         console.clear()
+        console.log('user',user)
         console.log("Starting websocket connection...");
         const websocketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
-        const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/sql/`;
+        const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/sql/${user}/`;
         const socket = new WebSocket(wsEndpoint);
     
         // New event listener to capture incoming messages
@@ -44,6 +54,25 @@
         socket.addEventListener("close", (event) => {
             console.log("WebSocket connection closed:", event);
         });
+
+         
+
+        const DbWritewsEndpoint = `${websocketProtocol}://${window.location.host}/ws/sql/${user}/`;
+        const DbWritesocket = new WebSocket(wsEndpoint);
+    
+        // New event listener to capture incoming messages
+        DbWritesocket.onmessage = function(event) {
+            console.log('Message received: ' + event.data);
+        };
+    
+        DbWritesocket.addEventListener("error", (event) => {
+            console.error("WebSocket error:", event);
+        });
+        
+        DbWritesocket.addEventListener("close", (event) => {
+            console.log("WebSocket connection closed:", event);
+        });
+    
     
         {% comment %} // Wait for the connection to be open before sending a message
         socket.onopen = function(event) {
@@ -58,10 +87,32 @@
            //     socket.send("HELLO SERVER" + i);
            //     i++
            // }
+            document.getElementById("user").onclick = function(){
+                console.log('Client student user channel')
+                var name = 'Stark_ch_'+i 
+                $.ajax(
+                    {
+                        type: 'POST',
+                        url: '/students/create-student-unique-channel/',  // URL to your view that serves new info
+                        data: {
+                            'name' : name,
+                            'user_id' : user,
+                            'csrfmiddlewaretoken' : '{{ csrf_token }}',     
+                        },
+                        success: function(data) {
+                            console.log(data)
+                        },
+                        error: function(data) {
+                            console.log(data)
+                        }
+                    }
+                )
+
+                i++
+            }
 
             document.getElementById("title").onclick = function(){
                 console.log('create student')
-
                 var name = 'Stark_'+i 
                 $.ajax(
                     {
@@ -79,6 +130,8 @@
                         }
                     }
                 )
+
+                i++
             }
 
 

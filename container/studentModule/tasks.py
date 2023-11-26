@@ -15,6 +15,29 @@ def add(i):
     return i*i
 
 @shared_task
+def create_student_unique_channel_task(name, user_id):
+    
+    print('USER CHANNEL CELERY')
+    print("db-write-{}".format(user_id))
+    student = Student(name=name, crated_at=timezone.now())
+    student.save()
+    student_id =  student.id 
+
+    async def async_func():
+        # Obtenez la couche de canal
+        channel_layer = get_channel_layer()
+        # Envoyez le message au groupe de l'utilisateur
+        await channel_layer.group_send(
+            "db-write-{}".format(user_id),
+            {
+                'type': 'send_notification',
+                'message': "[User Channel][Student ID] ->  " + str(student_id),   
+            }
+        )
+    # Exécutez la coroutine et obtenez le résultat
+    async_to_sync(async_func)()
+
+@shared_task
 def create_student_task(name):
     
     print('LLOOOOOOLLLL CELERY')
