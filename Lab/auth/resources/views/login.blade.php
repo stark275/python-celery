@@ -77,10 +77,10 @@
             <input id="email" type="text" name="email" value="{{ old('email') }}" required autofocus>
         </div>
 
-        <div>
+        {{-- <div>
             <label for="password">Password</label>
             <input id="password" type="password" name="password" required autocomplete="current-password">
-        </div>
+        </div> --}}
 
         <div >
             <button type="submit">Log in</button>
